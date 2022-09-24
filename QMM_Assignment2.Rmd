@@ -1,0 +1,139 @@
+---
+title: "Assignment2"
+author: "Sandhya Cheepurupalli"
+date: "2022-09-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Problem 1
+
+
+$$\text{Max}\hspace{0.3cm}z=420(L_1+L_2+L_3)\hspace{0.2cm}+\hspace{0.2cm}360(M_1+M_2+M_3)\hspace{0.2cm}+\hspace{0.2cm}300(S_1+S_2+S_3)\\
+$$
+subject to:
+
+$$L_1+M_1+S_1\hspace{0.2cm}\le\hspace{0.2cm}750\\
+L_2+M_2+S_2\hspace{0.2cm}\le\hspace{0.2cm}900\\
+L_3+M_3+S_3\hspace{0.2cm}\le\hspace{0.2cm}450\\
+\\
+20L_1+15M_1+12S_1\hspace{0.2cm}\le\hspace{0.2cm}1300\\
+20L_2+15M_2+12S_2\hspace{0.2cm}\le\hspace{0.2cm}1200\\
+20L_3+15M_3+12S_3\hspace{0.2cm}\le\hspace{0.2cm}5000\\
+\\
+L_1+L_2+L_3\hspace{0.2cm}\le\hspace{0.2cm}900\\
+M_1+M+2+M_3\hspace{0.2cm}\le\hspace{0.2cm}1200\\
+S_1+S_2+S_3\hspace{0.2cm}\le\hspace{0.2cm}750\\
+$$
+
+Non Negativity Constraints:
+$$L_1\ge0\text{,}
+L_2\ge0\text{,}
+L_3\ge0\text{,}
+M_1\ge0\text{,}
+M_2\ge0\text{,}
+M_3\ge0\text{,}
+S_1\ge0\text{,}
+S_2\ge0\text{,}
+S_3\ge0
+$$
+Let us consider all the 9 variables in each of the equation
+
+$$L_1 + M_1 + S_1 + 0L_2 + 0M_2 + 0S_2 + 0L_3 + 0M_3 + 0S_3\hspace{0.2cm}\le\hspace{0.2cm}750\\
+0L_1 + 0M_1 + 0S_1 + L_2 + M_2 + S_2 + 0L_3 + 0M_3 + 0S_3\hspace{0.2cm}\le\hspace{0.2cm}900\\
+0L_1 + 0M_1 + 0S_1 + 0L_2 + 0M_2 + 0S_2 + L_3 + M_3 + S_3\hspace{0.2cm}\le \hspace{0.2cm}450\\
+20L_1 + 15M_1 + 12S_1 + 0L_2 + 0M_2 + 0S_2 + 0L_3 + 0M_3 + 0S_3\hspace{0.2cm} \le\hspace{0.2cm} 13000\\
+0L_1 + 0M_1 + 0S_1 + 20L_2 + 15M_2 + 12S_2 + 0L_3 + 0M_3 + 0S_3\hspace{0.2cm} \le \hspace{0.2cm}12000\\
+0L_1 + 0M_1 + 0S_1 + 0L_2 + 0M_2 + 0S_2 + 20L_3 + 15M_3 + 12S_3\hspace{0.2cm} \le \hspace{0.2cm}5000\\
+L_1 + 0M_1 + 0S_1 + L_2 + 0M_2 + 0S_2 + L_3 + 0M_3 + 0S_3\hspace{0.2cm} \le\hspace{0.2cm} 900\\
+0L_1 + M_1 + 0S_1 + 0L_2 + M_2 + 0S_2 + 0L_3 + M_3 + 0S_3 \hspace{0.2cm}\le \hspace{0.2cm}1200\\
+0L_1 + 0M_1 + S_1 + 0L_2 + 0M_2 + S_2 + 0L_3 + 0M_3 + S_3\hspace{0.2cm} \le \hspace{0.2cm}750
+$$
+```{r}
+
+library(lpSolve)
+f.obj <- c(420,360,300,420,360,300,420,360,300)
+
+f.con <- matrix(c(1, 1, 1, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 1, 1, 1, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 1, 1, 1,
+                  20, 15, 12, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 20, 15, 12, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 20, 15, 12,
+                  1, 0, 0, 1, 0, 0, 1, 0, 0,
+                  0, 1, 0, 0, 1, 0, 0, 1, 0,
+                  0, 0, 1, 0, 0, 1, 0, 0, 1
+                  ), nrow = 9, byrow = TRUE)
+
+# Set unequality signs
+f.dir <- c("<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<="
+           )
+
+# Set right hand side coefficients
+f.rhs <- c(750, 900, 450, 13000,12000, 5000, 900, 1200, 750)
+
+
+# Final value (z)
+lp("max", f.obj, f.con, f.dir, f.rhs)
+
+# Variables final values
+lp("max", f.obj, f.con, f.dir, f.rhs)$solution
+
+```
+
+
+Problem 2:
+
+$$\text{Max}\hspace{0.3cm}=\hspace{0.3cm}3X_1\hspace{0.2cm}+\hspace{0.2cm}5X_2
+$$
+
+Subject to:
+$$X_1\le4\\
+2X_2\le12\\
+3X_1+2X_2\hspace{0.2cm}\le\hspace{0.2cm}18
+$$
+
+Let us consider all the variables in all the 3 equations
+
+$$X_1+0X_2\hspace{0.2cm}\le\hspace{0.2cm}4\\
+0X_1+2X_2\hspace{0.2cm}\le\hspace{0.2cm}12\\
+3X_1+2X_2\hspace{0.2cm}\le\hspace{0.2cm}18
+$$
+
+
+```{r}
+
+library(lpSolve)
+f.obj <- c(3, 5)
+
+f.con <- matrix(c(1, 0,
+                  0, 2,
+                  3, 2
+                  ), nrow = 3, byrow = TRUE)
+
+# Set unequality signs
+f.dir <- c("<=",
+           "<=",
+           "<=")
+
+# Set right hand side coefficients
+f.rhs <- c(4, 12, 18)
+
+
+# Final value (z)
+lp("max", f.obj, f.con, f.dir, f.rhs)
+
+# Variables final values
+lp("max", f.obj, f.con, f.dir, f.rhs)$solution
+
+```
